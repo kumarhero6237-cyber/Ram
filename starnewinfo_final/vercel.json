@@ -1,10 +1,25 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "routes": [
-    { "src": "/api/generate-ind(?:/.*)?", "dest": "/api/generate-ind.py" },
-    { "src": "/uc-info(?:/.*)?", "dest": "/api/index.py" },
-    { "src": "/ref-token(?:/.*)?", "dest": "/api/index.py" },
-    { "src": "/reload-guests(?:/.*)?", "dest": "/api/index.py" },
-    { "src": "/status(?:/.*)?", "dest": "/api/index.py" }
+    {
+      "src": "/generate-id(?:/.*)?",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/uc-info(?:/.*)?",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/ref-token(?:/.*)?",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/reload-guests(?:/.*)?",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/status(?:/.*)?",
+      "dest": "/api/index.py"
+    }
   ]
 }

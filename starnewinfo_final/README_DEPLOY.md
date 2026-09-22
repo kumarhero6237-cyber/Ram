@@ -14,7 +14,7 @@ Set these in Vercel:
 
 - `GENERATOR_API_KEY` = a strong secret
 - `ACCOUNT_GENERATOR_KEY` = the exact same value as `GENERATOR_API_KEY`
-- `ACCOUNT_GENERATOR_URL` = `/api/generate-ind`
+- `ACCOUNT_GENERATOR_URL` = `/generate-id`
 
 ## Important dependency note
 The supplied source imports these project protobuf modules:
@@ -27,5 +27,5 @@ The supplied source imports these project protobuf modules:
 They were not present in the available working files when this archive was assembled, so they are intentionally not fabricated. Add the real files from your existing working project into a `proto/` directory before deployment.
 
 ## Diagnostics
-`GET /api/generate-ind` is a health check and does not create an account.
-`POST /api/generate-ind` requires `X-Generator-Key` and returns a structured diagnostic response on failure.
+`GET /generate-id` is a health check and does not create an account.
+`POST /generate-id` requires `X-Generator-Key` and returns a structured diagnostic response on failure.

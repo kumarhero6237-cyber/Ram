@@ -25,7 +25,7 @@ MAIN_IV = base64.b64decode('Nm95WkRyMjJFM3ljaGpNJQ==')
 RELEASEVERSION = "OB55"
 USERAGENT = "UnityPlayer/2018.4.12f1 (UnityWebRequest/1.0, libcurl/8.5.0-DEV)"
 SUPPORTED_REGIONS = ["IND"]
-ACCOUNT_GENERATOR_URL = os.environ.get("ACCOUNT_GENERATOR_URL", "/api/generate-ind")
+ACCOUNT_GENERATOR_URL = os.environ.get("ACCOUNT_GENERATOR_URL", "/generate-id")
 ACCOUNT_GENERATOR_KEY = os.environ.get("ACCOUNT_GENERATOR_KEY", "CHANGE-ME-GENERATOR-KEY")
 GUEST_FILE = os.environ.get("GUEST_FILE", "guests.json")
 GENERATOR_TIMEOUT = float(os.environ.get("GENERATOR_TIMEOUT", "30"))
@@ -334,6 +334,84 @@ def cached_endpoint(ttl=300):
             return res
         return wrapper
     return decorator
+
+
+# -------------- Direct IND Account Generator Endpoint --------------
+# Public route: /generate-id
+# The endpoint lives inside the same Flask app, so there is no separate
+# /api/generate-ind function or generator folder to route through.
+
+def _generator_authorized():
+    expected = os.environ.get("GENERATOR_API_KEY", ACCOUNT_GENERATOR_KEY)
+    supplied = request.headers.get("X-Generator-Key", "")
+    return bool(expected) and supplied == expected
+
+
+@app.route('/generate-id', methods=['GET', 'POST'])
+def generate_id_endpoint():
+    if request.method == 'GET':
+        return jsonify({
+            "ok": True,
+            "service": "IND account generator",
+            "endpoint": "/generate-id",
+            "message": "POST with X-Generator-Key to generate exactly one IND account.",
+            "debug_version": APP_DEBUG_VERSION
+        }), 200
+
+    if not _generator_authorized():
+        return jsonify({
+            "ok": False,
+            "error": "Unauthorized",
+            "stage": "generator-auth"
+        }), 401
+
+    try:
+        # Import lazily so the normal info API startup remains unchanged until
+        # the generator endpoint is actually called.
+        from account_generator_service import (
+            cRoWnX_lOaD_eXiStInG_uIdS,
+            cRoWnX_cReAtE_aCcOuNt,
+            cRoWnX_rAnDoM_nIcKnAmE,
+        )
+
+        existing = cRoWnX_lOaD_eXiStInG_uIdS()
+        nickname = cRoWnX_rAnDoM_nIcKnAmE()
+        account = cRoWnX_cReAtE_aCcOuNt(
+            index=1,
+            existing_uids=existing,
+            nickname=nickname,
+            region="IND",
+        )
+
+        if not account:
+            return jsonify({
+                "ok": False,
+                "error": "Account creation failed",
+                "stage": "account-creation",
+                "debug_version": APP_DEBUG_VERSION
+            }), 502
+
+        return jsonify({
+            "ok": True,
+            "stage": "complete",
+            "debug_version": APP_DEBUG_VERSION,
+            "uid": str(account.get("uid", "")),
+            "password": str(account.get("password", "")),
+            "account_id": str(account.get("account_id", "")),
+            "name": str(account.get("name", "")),
+            "region": "IND"
+        }), 201
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "ok": False,
+            "error": "Account generation exception",
+            "stage": "account-creation",
+            "exception_type": type(e).__name__,
+            "detail": str(e),
+            "debug_version": APP_DEBUG_VERSION
+        }), 500
 
 # -------------- Routes Endpoints --------------
 
