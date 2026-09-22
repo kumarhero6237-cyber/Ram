@@ -1,0 +1,8 @@
+Flask
+flask-cors
+httpx
+cachetools
+protobuf
+pycryptodome
+requests
+urllib3
