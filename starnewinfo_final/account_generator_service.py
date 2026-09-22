@@ -15,7 +15,7 @@ from flask import Flask, request, jsonify
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from google.protobuf.json_format import MessageToJson
-from proto import MajorLoginRes_pb2
+from proto import FreeFire_pb2
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -221,11 +221,7 @@ def cRoWnX_mAjOr_LoGiN(session, access_token, open_id, lang="zh"):
         print("/MajorLogin 200 OK")
         try:
             payload = resp.content[64:]
-            res_msg = getattr(MajorLoginRes_pb2, "MajorLoginRes", None)
-            if res_msg is None:
-                res_msg = list(MajorLoginRes_pb2.DESCRIPTOR.message_types_by_name.values())[0]._concrete_class()
-            else:
-                res_msg = res_msg()
+            res_msg = FreeFire_pb2.LoginRes()
             res_msg.ParseFromString(payload)
             print(MessageToJson(res_msg, indent=2))
             token = getattr(res_msg, "token", None) or getattr(res_msg, "jwt", None)

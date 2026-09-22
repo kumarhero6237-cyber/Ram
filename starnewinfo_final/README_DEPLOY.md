@@ -29,3 +29,7 @@ They were not present in the available working files when this archive was assem
 ## Diagnostics
 `GET /generate-id` is a health check and does not create an account.
 `POST /generate-id` requires `X-Generator-Key` and returns a structured diagnostic response on failure.
+
+
+## Protobuf duplicate-symbol fix
+The generator endpoint uses the same `proto.FreeFire_pb2.LoginRes` schema already used by the main API instead of importing a second `MajorLoginRes_pb2` schema. This avoids the duplicate `BanReason` descriptor registration in a shared Vercel Python process.
